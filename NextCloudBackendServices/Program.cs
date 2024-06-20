@@ -15,6 +15,7 @@ builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddTransient<IS3Service, S3Service>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 
