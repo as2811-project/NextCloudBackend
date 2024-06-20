@@ -4,9 +4,21 @@ namespace NextCloudBackendServices.Models;
 [DynamoDBTable("NextCloud-users")]
 public class User
 {
-    [DynamoDBHashKey("user_id")]
+    [DynamoDBHashKey("email")]
+    public string? Email { get; set; }
+    
+    [DynamoDBProperty("user_id")]
     public string? Id { get; set; }
     
+    [DynamoDBProperty("username")]
+    public string? UserName { get; set; }
+    
+    [DynamoDBProperty("password")]
+    public string? Password { get; set; }
+}
+
+public class UserRegistration
+{
     [DynamoDBProperty("username")]
     public string? UserName { get; set; }
     
@@ -21,7 +33,6 @@ public class User
 public class UserLogin
 {
     [DynamoDBProperty("email")]
-    
     public string? Email { get; set; }
     
     [DynamoDBProperty("password")]

@@ -16,7 +16,7 @@ namespace NextCloudBackendServices.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(User request)
+        public async Task<IActionResult> Create(UserRegistration request)
         {
             var user = new User
             {
@@ -26,13 +26,13 @@ namespace NextCloudBackendServices.Controllers
                 Password = BCrypt.Net.BCrypt.HashPassword(request.Password), // Password Hashing
             };
             await _context.SaveAsync(user);
-            return CreatedAtAction(nameof(Create), new { id = request.Id }, request);
+            return CreatedAtAction(nameof(Create), new { id = user.Id }, request);
         }
         
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLogin request)
         {
-                var user = await _context.LoadAsync<UserLogin>(request.Email, request.Password);
+                var user = await _context.LoadAsync<User>(request.Email);
 
                 if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
                 {
