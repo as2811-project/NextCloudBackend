@@ -1,5 +1,6 @@
 using Amazon.DynamoDBv2.DataModel;
 using Microsoft.AspNetCore.Mvc;
+using NextCloudBackendServices.Interfaces;
 using NextCloudBackendServices.Models;
 
 namespace NextCloudBackendServices.Controllers
@@ -9,10 +10,11 @@ namespace NextCloudBackendServices.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IDynamoDBContext _context;
-
-        public AuthController(IDynamoDBContext context)
+        private readonly IS3Service _s3Service;
+        public AuthController(IDynamoDBContext context, IS3Service s3Service)
         {
             _context = context;
+            _s3Service = s3Service;
         }
 
         [HttpPost]
@@ -26,6 +28,7 @@ namespace NextCloudBackendServices.Controllers
                 Password = BCrypt.Net.BCrypt.HashPassword(request.Password), // Password Hashing
             };
             await _context.SaveAsync(user);
+            await _s3Service.CreateFolderAsync(user.Id);
             return CreatedAtAction(nameof(Create), new { id = user.Id }, request);
         }
         
