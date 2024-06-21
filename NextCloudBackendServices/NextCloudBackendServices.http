@@ -1,6 +1,7 @@
 @NextCloudBackendServices_HostAddress = http://localhost:5050
 
-GET {{NextCloudBackendServices_HostAddress}}/weatherforecast/
+GET {{NextCloudBackendServices_HostAddress}}/
 Accept: application/json
+
 
 ###
