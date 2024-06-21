@@ -1,7 +1,11 @@
 @NextCloudBackendServices_HostAddress = http://localhost:5050
 
-GET {{NextCloudBackendServices_HostAddress}}/
+### Registration Endpoint
+POST {{NextCloudBackendServices_HostAddress}}/api/Auth
 Accept: application/json
 
+### Login Endpoint
+POST {{NextCloudBackendServices_HostAddress}}/api/Auth/log
+Accept: application/json
 
-###
+### File Upload Endpoint

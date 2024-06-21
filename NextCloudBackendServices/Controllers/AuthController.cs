@@ -41,7 +41,8 @@ namespace NextCloudBackendServices.Controllers
                 {
                     return Unauthorized("Invalid credentials");
                 }
-                return Ok("Login successful");
+
+                return Ok(new { message = "Login successful", userId = user.Id });
         }
 
     }
