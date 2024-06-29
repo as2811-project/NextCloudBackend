@@ -1,5 +1,6 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NextCloudBackendServices.Interfaces;
 using NextCloudBackendServices.Models;
@@ -16,7 +17,8 @@ public class FilesController : ControllerBase
     {
         _fileService = fileService;
     }
-
+    
+    [Authorize]
     [HttpPost("upload")]
     public async Task<IActionResult> UploadFile([FromForm] S3DTO s3Dto, string userId)
     {

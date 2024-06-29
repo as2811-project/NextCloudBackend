@@ -1,5 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Amazon.DynamoDBv2.DataModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using NextCloudBackendServices.Interfaces;
 using NextCloudBackendServices.Models;
 
@@ -11,10 +15,12 @@ namespace NextCloudBackendServices.Controllers
     {
         private readonly IDynamoDBContext _context;
         private readonly IS3Service _s3Service;
-        public AuthController(IDynamoDBContext context, IS3Service s3Service)
+        private readonly IConfiguration _configuration;
+        public AuthController(IDynamoDBContext context, IS3Service s3Service, IConfiguration configuration)
         {
             _context = context;
             _s3Service = s3Service;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -42,7 +48,30 @@ namespace NextCloudBackendServices.Controllers
                     return Unauthorized("Invalid credentials");
                 }
 
-                return Ok(new { message = "Login successful", userId = user.Id });
+                var token = GenerateJwt(user);
+                return Ok(new { message = "Login successful", userId = user.Id, token });
+        }
+
+        private string GenerateJwt(User user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: credentials);
+            
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
     }
